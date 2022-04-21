@@ -27,9 +27,7 @@ namespace eval ::19_patch_db {
 			return -code error "  YOU HAVE TO SELECT LV0 EXTRACT OPTION !!!"
 		}
 
-		if {!$::options(--sign-iso)} {
-			return -code error "  PLEASE SELECT ISO_REBUILDER OPTION. THIS MAKES IT MORE ORIGINALLY !!!"
-		}
+		
 
 		if {${::NEWMFW_VER} > "4.25"} {
 			set fp [open [file join $::CUSTOM_UPDATE_FLAGS_TXT] r]

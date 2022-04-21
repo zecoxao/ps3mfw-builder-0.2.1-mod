@@ -27,9 +27,7 @@ namespace eval ::22_patch_appldr_unsigned_apps {
 			return -code error "  YOU HAVE TO SELECT LV0 EXTRACT OPTION FOR 4.XX MFW !!!"
 		}
 
-		if {!$::options(--sign-iso)} {
-			return -code error "  YOU HAVE TO SELECT ISO_REBUILDER OPTION FOR 4.21 !!!"
-		}
+		
 
 		if {${::NEWMFW_VER} != "4.21"} {
 			return -code error "  SORRY, ONLY FIRMWARE 4.21 FOR NOW !!!"

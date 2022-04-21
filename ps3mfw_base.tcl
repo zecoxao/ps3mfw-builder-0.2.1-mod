@@ -909,9 +909,6 @@ proc extract_lv0 {path file array} {
 	import_self_info $fullpath MyLV0Hdrs
 	# decrypt LV0 to "LV0.elf", and delete the original "lv0"
 	decrypt_self $fullpath ${fullpath}.elf
-	if {!$::options(--sign-iso)} {
-		file delete ${fullpath}
-	}
 	# export LV0 contents.....
 	append fullpath ".elf"	
 	shell ${::LV0TOOL} -option export -filename ${file}.elf -filepath $path
@@ -936,12 +933,9 @@ proc import_lv0 {path file array} {
 	# execute the "lv0tool" to re-import the loaders
 	shell ${::LV0TOOL} -option import -lv1crypt $lv1ldr_crypt -cleanup yes -filename ${file}.elf -filepath $path	
 	# resign "lv0.elf" "lv0.self"
-	if {$::options(--sign-iso)} {
-		sign_iso_elf ${fullpath}.elf ${fullpath}.self $fullpath
-		file delete $fullpath
-	} else {
-		sign_elf ${fullpath}.elf ${fullpath}.self MySelfHdrs
-	}
+	
+	sign_elf ${fullpath}.elf ${fullpath}.self MySelfHdrs
+	
 	file delete ${fullpath}.elf
 	file rename -force ${fullpath}.self $fullpath		
 	# debug "lv0 successfully rebuilt"
@@ -1029,15 +1023,7 @@ proc import_self_info {in array} {
 
 proc modify_self_file {file callback args} {
 	log "Modifying self/sprx [file tail $file]"
-	if {$::options(--sign-self)} {
-		decrypt_self $file ${file}.elf
-		eval $callback ${file}.elf $args
-		sign_self_elf ${file}.elf ${file}.self $file
-		file rename -force ${file}.self $file
-		file delete ${file}.elf
-		# debug "Self successfully rebuilt"
-		log "Self successfully rebuilt"
-	} else {
+	
 		array set MySelfHdrs {
 			--KEYREV ""
 			--AUTHID ""
@@ -1062,7 +1048,7 @@ proc modify_self_file {file callback args} {
 		file delete ${file}.elf
 		# debug "Self successfully rebuilt"
 		log "Self successfully rebuilt"
-	}
+	
 }
 
 proc modify_devflash_file {file callback args} {
@@ -1989,42 +1975,37 @@ proc modify_img_file { file callback args } {
 }
 proc modify_iso_file {file callback args} {
 	log "Modifying ISOLATED MODULE [file tail $file]"
-	if {$::options(--sign-iso)} {
-		decrypt_self $file ${file}.elf
-		eval $callback ${file}.elf $args
-		sign_iso_elf ${file}.elf ${file}.self $file
-		file rename -force ${file}.self $file
-		file delete ${file}.elf
-	} else {
-		array set MySelfHdrs {
-			--KEYREV ""
-			--AUTHID ""
-			--VENDORID ""
-			--SELFTYPE ""
-			--APPVERSION ""
-			--FWVERSION ""
-			--CTRLFLAGS ""
-			--CAPABFLAGS ""
-			--INDIVSEED ""
-			--COMPRESS ""
-		}
-		# read in the SELF hdr info to save off for re-signing
-		import_self_info $file MySelfHdrs	
-		# decrypt the self file
-		decrypt_self $file ${file}.elf
-		# call the "callback" function to do patching/etc
-		eval $callback ${file}.elf $args
-		# now re-sign the SELF file for final output
-		sign_elf ${file}.elf ${file}.self MySelfHdrs	
-		#file copy -force ${file}.self ${::BUILD_DIR}    # used for debugging to copy the patched elf and new re-signed self to MFW build dir without the need to unpup the whole fw or even a single file
-		file rename -force ${file}.self $file
-		#file copy -force ${file}.elf ${::BUILD_DIR}     # same as above
-		file delete ${file}.elf
+	
+	array set MySelfHdrs {
+		--KEYREV ""
+		--AUTHID ""
+		--VENDORID ""
+		--SELFTYPE ""
+		--APPVERSION ""
+		--FWVERSION ""
+		--CTRLFLAGS ""
+		--CAPABFLAGS ""
+		--INDIVSEED ""
+		--COMPRESS ""
 	}
+	# read in the SELF hdr info to save off for re-signing
+	import_self_info $file MySelfHdrs	
+	# decrypt the self file
+	decrypt_self $file ${file}.elf
+	# call the "callback" function to do patching/etc
+	eval $callback ${file}.elf $args
+	# now re-sign the SELF file for final output
+	sign_elf ${file}.elf ${file}.self MySelfHdrs	
+	#file copy -force ${file}.self ${::BUILD_DIR}    # used for debugging to copy the patched elf and new re-signed self to MFW build dir without the need to unpup the whole fw or even a single file
+	file rename -force ${file}.self $file
+	#file copy -force ${file}.elf ${::BUILD_DIR}     # same as above
+	file delete ${file}.elf
+	
 	log "ISOLATED MODULE successfully rebuilt"
 }
 proc modify_sce_file {file callback args} {
 	log "Modifying self/sprx [file tail $file]"
+	
 	array set MySelfHdrs {
 		--KEYREV ""
 		--AUTHID ""
