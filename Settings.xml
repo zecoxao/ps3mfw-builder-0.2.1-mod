@@ -3,7 +3,7 @@
 	<language>English</language>
 	<BUILD_DIR>C:\Users\zecoxao\AppData\Local\Temp\PS3MFW</BUILD_DIR>
 	<PS3_KEYS>C:/Users/zecoxao/Desktop/ps3mfw-builder-0.2.1-mod/ps3keys</PS3_KEYS>	
-	<IN_FILE>C:/Users/zecoxao/Desktop/miguel/EVILNAT/PS3UPDAT.PUP</IN_FILE>	
+	<IN_FILE>C:/Users/zecoxao/Desktop/CFW 4.89 Evilnat Cobra [CEX]/PS3/UPDATE/PS3UPDAT.PUP</IN_FILE>	
 	<OUT_FILE>C:/Users/zecoxao/Desktop/test.PUP</OUT_FILE>	    
 	<tasks> 01_patch_rsx_oc</tasks>
 </Settings>
